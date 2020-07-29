@@ -1,0 +1,136 @@
+<?php
+
+//$HV = "h";
+//$diameter = 96;
+//$length = 368;
+//$inc = 0.125;
+$HV = $_POST['hv'];
+$diameter = $_POST['diameter'];
+$length = $_POST['length']; //length or height
+$inc = $_POST['increment'];
+$radius = $diameter / 2;
+$iVer = 0;
+
+function CalcFul($v) {
+	global  $radius;
+	$AreaHalf = pi() * ($radius*$radius)/2;
+	$half231 = $AreaHalf / 231;
+	return round($half231*2*$v, 1);
+}
+
+function CalcFormula($iVer) {
+	global $diameter, $length, $radius;
+
+	if($iVer == 0) {
+		return 0;
+	
+	} elseif($iVer < $diameter / 2)	{
+		
+		$h = $radius - $iVer;
+		$b = sqrt(($radius * $radius) - ($h * $h));
+		$Area = atan($b / $h) * $radius * $radius  - $h * sqrt(($radius * $radius) - ($h * $h));
+		$div231 = $Area/231;
+		return round(round($div231, 3) * $length, 2);
+		
+	} elseif ($iVer == $diameter/2)	{
+			
+		$AreaHalf = pi() * ($radius * $radius) / 2;
+		$half231 = $AreaHalf / 231;
+		return round(round($half231, 3) * $length, 2);
+		
+	} else {
+
+		$AreaHalf = pi() * ($radius * $radius) / 2;
+		$half231 = $AreaHalf / 231;
+		
+		$h = $iVer - $radius;
+		$b = sqrt(($radius * $radius) - ($h * $h));
+		$Area = atan($b / $h) * $radius * $radius - $h * sqrt(($radius * $radius) - ($h * $h));
+		$div231 = $Area/231;
+		$raw = round((($half231 - $div231) + $half231) * $length, 2);
+		return round($raw, 3);
+	}
+}
+
+if($HV == "h") {
+	
+	do{
+
+		//Column1
+		if($iVer <= (($diameter / 4) - $inc))	{
+			$strcol1 = $strcol1 . number_format($iVer,3) . "<br>";
+			//$strcol1a = $strcol1a . number_format(CalcFormula($iVer),2) . " |<br>";
+			$strcol1a = $strcol1a . number_format(CalcFormula($iVer)) . " |<br>";
+		}
+		
+		//Column2
+		if($iVer <= ((($diameter / 4)*2) - $inc) && ($iVer > (($diameter / 4) - $inc)))	{
+			$strcol2 = $strcol2 . number_format($iVer,3) . "<br>";
+			//$strcol2a = $strcol2a . number_format(CalcFormula($iVer),2) . " |<br>";
+			$strcol2a = $strcol2a . number_format(CalcFormula($iVer)) . " |<br>";
+		}
+		
+		//Column3
+		if($iVer <= ((($diameter / 4)*3) - $inc) && ($iVer > (($diameter / 4) *2 - $inc))) {
+			$strcol3 = $strcol3 . number_format($iVer,3) . "<br>";
+			$strcol3a = $strcol3a . number_format(CalcFormula($iVer),2) . " |<br>";
+		}
+		
+		//Column4
+		if($iVer <= ((($diameter / 4)*4) - $inc) && ($iVer > (($diameter / 4) *3 - $inc))) {
+			$strcol4 = $strcol4 . number_format($iVer,3) . "<br>";
+			$strcol4a = $strcol4a . number_format(CalcFormula($iVer),2) . " |<br>";
+		}
+		
+		$iVer = $iVer + $inc;
+		
+	} while($iVer < $diameter);
+	
+} else { //$HV == "v"
+	
+	function verticaltank($a) {
+		global $diameter, $length, $inc;
+		$rad = ($diameter / 2) / 12;
+		
+		$cubic_feet = pi() * ($rad * $rad) * $a;
+
+		$gallons = $cubic_feet * 7.47;
+		
+		return $gallons / 12;
+	}
+	
+	do{
+
+		//Column1
+		if($iVer <= (($length / 4) - $inc)) {
+			$strcol1 = $strcol1 . number_format($iVer,3) . "<br>";
+			$strcol1a = $strcol1a . number_format(verticaltank($iVer),2) . " |<br>";
+
+		}
+		
+		//Column2
+		if($iVer <= ((($length / 4)*2) - $inc) && ($iVer > (($length / 4) - $inc))) {
+			$strcol2 = $strcol2 . number_format($iVer,3) . "<br>";
+			$strcol2a = $strcol2a . number_format(verticaltank($iVer),2) . " |<br>";
+		}
+		
+		//Column3
+		if($iVer <= ((($length / 4)*3) - $inc) && ($iVer > (($length / 4) *2 - $inc))) {
+			$strcol3 = $strcol3 . number_format($iVer,3) . "<br>";
+			$strcol3a = $strcol3a . number_format(verticaltank($iVer),2) . " |<br>";
+		}
+		
+		//Column4
+		if($iVer <= ((($length / 4)*4) - $inc) && ($iVer > (($length / 4) *3 - $inc))) {
+			$strcol4 = $strcol4 . number_format($iVer,3) . "<br>";
+			$strcol4a = $strcol4a . number_format(verticaltank($iVer),2) . " |<br>";
+		}
+		
+		$iVer = $iVer + $inc;
+		
+	} while($iVer < $length);
+	
+}
+
+
+?>
